@@ -26,10 +26,9 @@ namespace Ukrasheniya
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            // TODO: данная строка кода позволяет загрузить данные в таблицу "wsrDataSet.test". При необходимости она может быть перемещена или удалена.
-            //this.testTableAdapter.Fill(this.wsrDataSet.test);
             connection.Open();
-            string query = "SELECT id,username,password,name FROM test";
+
+            string query = "SELECT id,username,password,name FROM test2";
             SqlCommand command = new SqlCommand(query, connection);
             SqlDataReader reader = command.ExecuteReader();
             List<string[]> data = new List<string[]>(4);
@@ -48,7 +47,135 @@ namespace Ukrasheniya
             dataGridView1.Columns[3].HeaderText = "name";
             foreach (string[] s in data)
                dataGridView1.Rows.Add(s);
+
             
+
         }
+
+        void update_table()
+        {
+            dataGridView1.Rows.Clear();
+            string query = "SELECT * FROM test2";
+            SqlCommand command = new SqlCommand(query, connection);
+            SqlDataReader reader = command.ExecuteReader();
+            List<string[]> data = new List<string[]>();
+            while (reader.Read())
+            {
+                data.Add(new string[4]);
+                data[data.Count - 1][0] = reader[0].ToString();
+                data[data.Count - 1][1] = reader[1].ToString();
+                data[data.Count - 1][2] = reader[2].ToString();
+                data[data.Count - 1][3] = reader[3].ToString();
+            }
+            reader.Close();
+            dataGridView1.Columns[0].HeaderText = "id";
+            dataGridView1.Columns[1].HeaderText = "username";
+            dataGridView1.Columns[2].HeaderText = "password";
+            dataGridView1.Columns[3].HeaderText = "name";
+            foreach (string[] s in data)
+                dataGridView1.Rows.Add(s);
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            startform frm2 = new startform(); //где Form2 - название вашей формы
+            frm2.Show();
+            this.Hide();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+
+            string query = "INSERT INTO test2(id, username, password, name) VALUES (" + "'"
+                + textBox1.Text + "'" + "," + "'" + textBox2.Text + "'" + "," + "'" + textBox3.Text + "'" + "," + "'" + textBox4.Text + "'" + ")";
+            if (connection.State == ConnectionState.Open)
+            {
+                SqlCommand command = new SqlCommand(query, connection);
+                try
+                {
+                    command.ExecuteNonQuery();
+                    MessageBox.Show("Заказ добавлен!");
+                }
+                catch (Exception exception)
+                {
+                    MessageBox.Show(exception.Message);
+                    throw;
+                }
+                textBox1.Clear();
+                textBox2.Clear();
+                textBox3.Clear();
+                textBox4.Clear();
+
+                //Обновление данных таблицы
+
+                update_table();
+            }
+            else
+            {
+                MessageBox.Show("Соединения с БД нет");
+            }
+
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            string query = "DELETE FROM test2 WHERE id = '" + textBox5.Text + "'";
+            if (connection.State == ConnectionState.Open)
+            {
+                SqlCommand command = new SqlCommand(query, connection);
+                try
+                {
+                    command.ExecuteNonQuery();
+                    MessageBox.Show("Данные удалены");
+                }
+                catch (Exception exception)
+                {
+                    MessageBox.Show(exception.Message);
+                    throw;
+                }
+
+                textBox5.Clear();
+
+                //Обновление данных таблицы
+                update_table();
+            }
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            string query = "UPDATE test2 SET username = '"
+                + textBox7.Text + "' , password =  '" + textBox8.Text
+                + "' , name =  '" + textBox9.Text 
+                + "' WHERE id = '" + textBox6.Text + "'";
+
+            if (connection.State == ConnectionState.Open)
+            {
+                SqlCommand command = new SqlCommand(query, connection);
+                try
+                {
+                    command.ExecuteNonQuery();
+                    MessageBox.Show("Данные изменены");
+                }
+                catch (Exception exception)
+                {
+                    MessageBox.Show(exception.Message);
+                    throw;
+                }
+                textBox6.Clear();
+                textBox7.Clear();
+                textBox8.Clear();
+                textBox9.Clear();
+
+                //Обновление данных таблицы
+                update_table();
+            }
+        }
+
+
     }
 }
+//string n = dataGridView1.SelectedRows[0].Index.ToString();
+//string b = dataGridView1[0, Convert.ToInt32(n)].Value.ToString();
+//MessageBox.Show(b);
+
+//Получаем значение выделенной ячейки
